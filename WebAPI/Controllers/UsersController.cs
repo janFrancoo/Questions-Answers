@@ -1,5 +1,6 @@
 ﻿using Business;
 using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -16,6 +17,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("get-user")]
+        [Authorize()]
         public IActionResult GetUser(string email)
         {
             var result = _userService.GetByMail(email);
@@ -27,6 +29,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("get-all-users")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAllUsers()
         {
             var result = _userService.GetUsers();
@@ -38,6 +41,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("update-user")]
+        [Authorize(Roles = "Admin")]
         public IActionResult UpdateUser(User user)
         {
             var result = _userService.Update(user);
