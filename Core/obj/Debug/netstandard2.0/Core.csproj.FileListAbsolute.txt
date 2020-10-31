@@ -1,0 +1,8 @@
+C:\Users\PC\Documents\Web Projects\ASPNET - QA - REST\QuestionsAnswersREST\Core\bin\Debug\netstandard2.0\Core.deps.json
+C:\Users\PC\Documents\Web Projects\ASPNET - QA - REST\QuestionsAnswersREST\Core\bin\Debug\netstandard2.0\Core.dll
+C:\Users\PC\Documents\Web Projects\ASPNET - QA - REST\QuestionsAnswersREST\Core\obj\Debug\netstandard2.0\Core.AssemblyInfoInputs.cache
+C:\Users\PC\Documents\Web Projects\ASPNET - QA - REST\QuestionsAnswersREST\Core\obj\Debug\netstandard2.0\Core.AssemblyInfo.cs
+C:\Users\PC\Documents\Web Projects\ASPNET - QA - REST\QuestionsAnswersREST\Core\bin\Debug\netstandard2.0\Core.pdb
+C:\Users\PC\Documents\Web Projects\ASPNET - QA - REST\QuestionsAnswersREST\Core\obj\Debug\netstandard2.0\Core.csproj.CoreCompileInputs.cache
+C:\Users\PC\Documents\Web Projects\ASPNET - QA - REST\QuestionsAnswersREST\Core\obj\Debug\netstandard2.0\Core.dll
+C:\Users\PC\Documents\Web Projects\ASPNET - QA - REST\QuestionsAnswersREST\Core\obj\Debug\netstandard2.0\Core.pdb
