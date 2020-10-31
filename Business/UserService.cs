@@ -14,9 +14,24 @@ namespace Business
             _userDao = userDao;
         }
 
+        public IResult Add(User user)
+        {
+            _userDao.Add(user);
+            return new SuccessResult();
+        }
+
         public IDataResult<User> GetByMail(string mail)
         {
-            return new SuccessDataResult<User>(_userDao.Get(u => u.Email == mail));
+            var result = _userDao.Get(u => u.Email == mail);
+            if (result == default)
+                return new ErrorDataResult<User>("No such user");
+
+            return new SuccessDataResult<User>(result);
+        }
+
+        public List<OperationClaim> GetClaims(User user)
+        {
+            return _userDao.GetClaims(user);
         }
 
         public IDataResult<List<User>> GetUsers()

@@ -8,6 +8,8 @@ namespace Business
     {
         IDataResult<User> GetByMail(string mail);
         IDataResult<List<User>> GetUsers();
+        IResult Add(User user);
         IResult Update(User user);
+        List<OperationClaim> GetClaims(User user);
     }
 }
