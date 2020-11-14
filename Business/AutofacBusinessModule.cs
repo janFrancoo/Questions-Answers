@@ -16,6 +16,9 @@ namespace Business
 
             builder.RegisterType<EFQuestionDao>().As<IQuestionDao>();
             builder.RegisterType<QuestionService>().As<IQuestionService>();
+
+            builder.RegisterType<EFAnswerDao>().As<IAnswerDao>();
+            builder.RegisterType<AnswerService>().As<IAnswerService>();
         }
     }
 }
