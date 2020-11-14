@@ -13,6 +13,9 @@ namespace Business
 
             builder.RegisterType<TokenHelper>().As<ITokenHelper>();
             builder.RegisterType<AuthService>().As<IAuthService>();
+
+            builder.RegisterType<EFQuestionDao>().As<IQuestionDao>();
+            builder.RegisterType<QuestionService>().As<IQuestionService>();
         }
     }
 }
