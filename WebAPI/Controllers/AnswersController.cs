@@ -2,6 +2,7 @@
 using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace WebAPI.Controllers
 {
@@ -42,6 +43,10 @@ namespace WebAPI.Controllers
         [Authorize()]
         public IActionResult AddAnswer(Answer answer)
         {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var userId = identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            answer.UserId = int.Parse(userId);
+
             var result = _answerService.Add(answer);
             if (result.Success)
                 return Ok();
@@ -50,7 +55,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("update-answer")]
-        [Authorize()]
+        [Authorize(Roles = "Admin")]
         public IActionResult UpdateAnswer(Answer answer)
         {
             var result = _answerService.Update(answer);
@@ -61,7 +66,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("delete-answer")]
-        [Authorize()]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteAnswer(int id)
         {
             var result = _answerService.Delete(id);

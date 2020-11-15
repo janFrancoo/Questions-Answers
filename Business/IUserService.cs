@@ -6,6 +6,7 @@ namespace Business
 {
     public interface IUserService
     {
+        IDataResult<User> GetById(int id);
         IDataResult<User> GetByMail(string mail);
         IDataResult<List<User>> GetUsers();
         IResult Add(User user);

@@ -3,6 +3,7 @@ using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
@@ -53,26 +54,36 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpPost("upload-avatar")]
+        [HttpPost("update-avatar")]
         [Authorize()]
-        public async Task<IActionResult> UploadAvatar(IFormCollection formData)
+        public async Task<IActionResult> UpdateAvatar(IFormCollection formData)
         {
             var files = HttpContext.Request.Form.Files;
-
             if (files.Count != 1)
                 return BadRequest("Invalid file count");
 
             var file = files[0];
-            var filePath = "Static/Avatars/" + file.FileName;
-            var returnPath = "Media/Avatars/" + file.FileName;
+            if (!file.ContentType.Split("/")[0].Equals("image"))
+                return BadRequest("Invalid file format");
+
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            int userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            string fileName = userId + "." + file.ContentType.Split("/")[1];
+            string filePath = "Static/Avatars/" + fileName;
 
             using var stream = System.IO.File.Create(filePath);
             await file.CopyToAsync(stream);
 
-            return Ok(new { 
+            var user = _userService.GetById(userId).Data;
+            user.Avatar = fileName;
+            _userService.Update(user);
+
+            return Ok(new
+            {
                 Success = true,
                 Data = new {
-                    Path = returnPath
+                    Avatar = fileName
                 }
             });
         }

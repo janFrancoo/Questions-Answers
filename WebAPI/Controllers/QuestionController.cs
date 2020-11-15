@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using Business;
 using Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -54,6 +55,10 @@ namespace WebAPI.Controllers
         [Authorize()]
         public IActionResult AddQuestion(Question question)
         {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var userId = identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            question.UserId = int.Parse(userId);
+
             var result = _questionService.Add(question);
             if (result.Success)
                 return Ok();

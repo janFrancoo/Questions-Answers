@@ -20,6 +20,15 @@ namespace Business
             return new SuccessResult();
         }
 
+        public IDataResult<User> GetById(int id)
+        {
+            var result = _userDao.Get(u => u.Id == id);
+            if (result == default)
+                return new ErrorDataResult<User>("No such user");
+
+            return new SuccessDataResult<User>(result);
+        }
+
         public IDataResult<User> GetByMail(string mail)
         {
             var result = _userDao.Get(u => u.Email == mail);
