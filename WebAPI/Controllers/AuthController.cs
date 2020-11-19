@@ -1,6 +1,8 @@
 ﻿using Business;
+using Core.Helpers.Mail;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
@@ -9,10 +11,12 @@ namespace WebAPI.Controllers
     public class AuthController : ControllerBase
     {
         private IAuthService _authService;
+        private IMailer _mailer;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IMailer mailer)
         {
             _authService = authService;
+            _mailer = mailer;
         }
 
         [HttpPost("login")]
@@ -30,7 +34,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register(UserForRegisterDto userForRegisterDto)
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
             var checkUserExists = _authService.CheckUserExists(userForRegisterDto.Email);
             if (!checkUserExists.Success)
@@ -43,6 +47,8 @@ namespace WebAPI.Controllers
             var result = _authService.CreateAccessToken(userToRegister.Data);
             if (!result.Success)
                 return BadRequest(result);
+
+            await _mailer.SendMailAsync(userForRegisterDto.Email, "Welcome!", "Test mail");
 
             return Ok(result);
         }
