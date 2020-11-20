@@ -4,6 +4,7 @@ using Core.Helpers.Mail;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -15,11 +16,13 @@ namespace WebAPI.Controllers
     {
         private IAuthService _authService;
         private IMailer _mailer;
+        private IOptions<CodeSettings> _codeSettings;
 
-        public AuthController(IAuthService authService, IMailer mailer)
+        public AuthController(IAuthService authService, IMailer mailer, IOptions<CodeSettings> codeSettings)
         {
             _authService = authService;
             _mailer = mailer;
+            _codeSettings = codeSettings;
         }
 
         [HttpPost("login")]
@@ -52,7 +55,8 @@ namespace WebAPI.Controllers
                 return BadRequest(result);
 
             CodeHelper codeHelper = new CodeHelper();
-            await _mailer.SendMailAsync(userForRegisterDto.Email, "Welcome!", codeHelper.GenerateRandomCode(6));
+            await _mailer.SendMailAsync(userForRegisterDto.Email, "Welcome!", 
+                codeHelper.GenerateRandomCode(_codeSettings.Value.ActivationCodeLength));
 
             return Ok(result);
         }

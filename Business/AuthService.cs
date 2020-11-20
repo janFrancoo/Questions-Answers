@@ -3,6 +3,7 @@ using Core.Helpers.Result;
 using DataAccess;
 using Entities;
 using Entities.Dtos;
+using Microsoft.Extensions.Options;
 
 namespace Business
 {
@@ -11,12 +12,15 @@ namespace Business
         private IUserService _userService;
         private ITokenHelper _tokenHelper;
         private IUserActivationDao _userActivationDao;
+        private IOptions<CodeSettings> _codeSettings;
 
-        public AuthService(IUserService userService, IUserActivationDao userActivationDao, ITokenHelper tokenHelper)
+        public AuthService(IUserService userService, IUserActivationDao userActivationDao, ITokenHelper tokenHelper, 
+            IOptions<CodeSettings> codeSettings)
         {
             _userService = userService;
             _tokenHelper = tokenHelper;
             _userActivationDao = userActivationDao;
+            _codeSettings = codeSettings;
         }
 
         public IDataResult<AccessToken> CreateAccessToken(User user)
@@ -60,7 +64,7 @@ namespace Business
             var userActivation = new UserActivation
             {
                 UserId = result.Data.Id,
-                ActivationCode = codeHelper.GenerateRandomCode(6)
+                ActivationCode = codeHelper.GenerateRandomCode(_codeSettings.Value.ActivationCodeLength)
             };
 
             _userActivationDao.Add(userActivation);

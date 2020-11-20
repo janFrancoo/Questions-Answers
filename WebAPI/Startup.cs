@@ -44,6 +44,8 @@ namespace WebAPI
 
             services.Configure<SmtpSettings>(Configuration.GetSection("SmtpSettings"));
             services.AddSingleton<IMailer, Mailer>();
+
+            services.Configure<CodeSettings>(Configuration.GetSection("CodeSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
