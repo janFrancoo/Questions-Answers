@@ -11,5 +11,6 @@ namespace Business
         IDataResult<User> Login(UserForLoginDto userForLoginDto);
         IResult CheckUserExists(string email);
         IDataResult<AccessToken> CreateAccessToken(User user);
+        IResult ActivateAccount(int userId, string code);
     }
 }

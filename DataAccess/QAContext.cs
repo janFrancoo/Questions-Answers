@@ -6,6 +6,7 @@ namespace DataAccess
     public class QAContext: DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<UserActivation> UserActivations { get; set; }
         public DbSet<OperationClaim> OperationClaims { get; set; }
         public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
         public DbSet<Question> Questions { get; set; }

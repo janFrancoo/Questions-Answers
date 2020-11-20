@@ -1,7 +1,10 @@
 ﻿using Business;
+using Core.Helpers.Auth;
 using Core.Helpers.Mail;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
@@ -48,9 +51,24 @@ namespace WebAPI.Controllers
             if (!result.Success)
                 return BadRequest(result);
 
-            await _mailer.SendMailAsync(userForRegisterDto.Email, "Welcome!", "Test mail");
+            CodeHelper codeHelper = new CodeHelper();
+            await _mailer.SendMailAsync(userForRegisterDto.Email, "Welcome!", codeHelper.GenerateRandomCode(6));
 
             return Ok(result);
+        }
+
+        [HttpPost("activate")]
+        [Authorize()]
+        public IActionResult ActivateAccount(ActivationCodeDto activationCodeDto)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var result = _authService.ActivateAccount(userId, activationCodeDto.Code);
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok();
         }
     }
 }

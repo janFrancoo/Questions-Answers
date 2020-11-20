@@ -10,6 +10,7 @@ namespace Business
         {
             builder.RegisterType<UserService>().As<IUserService>();
             builder.RegisterType<EFUserDao>().As<IUserDao>();
+            builder.RegisterType<EFUserActivationDao>().As<IUserActivationDao>();
 
             builder.RegisterType<TokenHelper>().As<ITokenHelper>();
             builder.RegisterType<AuthService>().As<IAuthService>();
