@@ -1,5 +1,6 @@
 ﻿using Business;
 using Entities;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -86,6 +87,20 @@ namespace WebAPI.Controllers
                     Avatar = fileName
                 }
             });
+        }
+
+        [HttpPut("change-password")]
+        [Authorize()]
+        public IActionResult ChangePassword(PasswordUpdateDto passwordUpdateDto)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            int userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var result = _userService.ChangePassword(userId, passwordUpdateDto.CurrentPassword, passwordUpdateDto.NewPassword);
+            if (result.Success)
+                return Ok();
+
+            return BadRequest(result.Message);
         }
     }
 }

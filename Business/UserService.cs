@@ -1,4 +1,5 @@
-﻿using Core.Helpers.Result;
+﻿using Core.Helpers.Auth;
+using Core.Helpers.Result;
 using DataAccess;
 using Entities;
 using System.Collections.Generic;
@@ -17,6 +18,23 @@ namespace Business
         public IResult Add(User user)
         {
             _userDao.Add(user);
+            return new SuccessResult();
+        }
+
+        public IResult ChangePassword(int userId, string currentPassword, string newPassword)
+        {
+            var user = _userDao.Get(u => u.Id == userId);
+            if (user == default)
+                return new ErrorResult("User not found");
+
+            if (!HashingHelper.VerifyPasswordHash(currentPassword, user.PasswordHash, user.PasswordSalt))
+                return new ErrorResult("Check your credentials");
+
+            HashingHelper.CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            _userDao.Update(user);
+
             return new SuccessResult();
         }
 

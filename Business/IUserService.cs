@@ -11,6 +11,7 @@ namespace Business
         IDataResult<List<User>> GetUsers();
         IResult Add(User user);
         IResult Update(User user);
+        IResult ChangePassword(int userId, string currentPassword, string newPassword);
         List<OperationClaim> GetClaims(User user);
     }
 }
