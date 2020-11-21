@@ -1,5 +1,6 @@
 ﻿using Core.Helpers.Result;
 using Entities;
+using Entities.Dtos;
 using System.Collections.Generic;
 
 namespace Business
@@ -13,5 +14,6 @@ namespace Business
         IResult Update(User user);
         IResult ChangePassword(int userId, string currentPassword, string newPassword);
         List<OperationClaim> GetClaims(User user);
+        List<AnswerForAnswerLikeDto> GetLikes(int userId);
     }
 }

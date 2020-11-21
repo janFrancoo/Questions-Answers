@@ -11,5 +11,6 @@ namespace Business
         IResult Add(Answer answer);
         IResult Update(Answer answer);
         IResult Delete(int id);
+        IResult LikeAnswer(int userId, int answerId);
     }
 }

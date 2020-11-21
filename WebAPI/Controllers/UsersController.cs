@@ -102,5 +102,16 @@ namespace WebAPI.Controllers
 
             return BadRequest(result.Message);
         }
+
+        [HttpGet("get-likes")]
+        [Authorize()]
+        public IActionResult GetLikes()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            int userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var result = _userService.GetLikes(userId);
+            return Ok(result);
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace Entities
         public int UserId { get; set; }
         public string AnswerText { get; set; }
         public DateTime Date { get; set; }
+        public int LikeCount { get; set; }
     }
 }

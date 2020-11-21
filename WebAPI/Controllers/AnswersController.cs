@@ -75,5 +75,19 @@ namespace WebAPI.Controllers
 
             return BadRequest(result.Message);
         }
+
+        [HttpGet("like-answer")]
+        [Authorize()]
+        public IActionResult LikeAnswer(int answerId)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            int userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var result = _answerService.LikeAnswer(userId, answerId);
+            if (result.Success)
+                return Ok();
+
+            return BadRequest(result.Message);
+        }
     }
 }

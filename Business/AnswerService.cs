@@ -3,15 +3,19 @@ using DataAccess;
 using Entities;
 using System.Collections.Generic;
 
+// GET ANSWER WITH LIKE COUNT
+
 namespace Business
 {
     public class AnswerService : IAnswerService
     {
         private IAnswerDao _answerDao;
+        private IAnswerLikeDao _answerLikeDao;
 
-        public AnswerService(IAnswerDao answerDao)
+        public AnswerService(IAnswerDao answerDao, IAnswerLikeDao answerLikeDao)
         {
             _answerDao = answerDao;
+            _answerLikeDao = answerLikeDao;
         }
 
         public IResult Add(Answer answer)
@@ -32,12 +36,28 @@ namespace Business
 
         public IDataResult<List<Answer>> GetAnswersByQuestion(int questionId)
         {
-            return new SuccessDataResult<List<Answer>>(_answerDao.GetList(a => a.QuestionId == questionId));
+            return new SuccessDataResult<List<Answer>>(_answerDao.GetWithLikeCount(a => a.QuestionId == questionId));
         }
 
         public IDataResult<List<Answer>> GetAnswersByUser(int userId)
         {
-            return new SuccessDataResult<List<Answer>>(_answerDao.GetList(a => a.UserId == userId));
+            return new SuccessDataResult<List<Answer>>(_answerDao.GetWithLikeCount(a => a.UserId == userId));
+        }
+
+        public IResult LikeAnswer(int userId, int answerId)
+        {
+            var likeToCheck = _answerLikeDao.Get(l => l.UserId == userId);
+
+            if (likeToCheck != default)
+                _answerLikeDao.Delete(likeToCheck);
+            else
+                _answerLikeDao.Add(new AnswerLike
+                {
+                    UserId = userId,
+                    AnswerId = answerId
+                });
+
+            return new SuccessResult();
         }
 
         public IResult Update(Answer answer)

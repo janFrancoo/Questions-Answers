@@ -11,6 +11,7 @@ namespace DataAccess
         public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
+        public DbSet<AnswerLike> AnswerLikes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

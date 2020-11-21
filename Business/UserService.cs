@@ -2,6 +2,7 @@
 using Core.Helpers.Result;
 using DataAccess;
 using Entities;
+using Entities.Dtos;
 using System.Collections.Generic;
 
 namespace Business
@@ -59,6 +60,11 @@ namespace Business
         public List<OperationClaim> GetClaims(User user)
         {
             return _userDao.GetClaims(user);
+        }
+
+        public List<AnswerForAnswerLikeDto> GetLikes(int userId)
+        {
+            return _userDao.GetLikes(userId);
         }
 
         public IDataResult<List<User>> GetUsers()

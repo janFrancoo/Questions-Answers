@@ -20,6 +20,7 @@ namespace Business
 
             builder.RegisterType<EFAnswerDao>().As<IAnswerDao>();
             builder.RegisterType<AnswerService>().As<IAnswerService>();
+            builder.RegisterType<EFAnswerLikeDao>().As<IAnswerLikeDao>();
         }
     }
 }
