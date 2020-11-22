@@ -1,8 +1,12 @@
 ﻿using Business;
+using DataAccess;
 using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
@@ -11,30 +15,52 @@ namespace WebAPI.Controllers
     public class AnswersController : ControllerBase
     {
         private IAnswerService _answerService;
+        private RedisService _redisService;
 
-        public AnswersController(IAnswerService answerService)
+        public AnswersController(IAnswerService answerService, RedisService redisService)
         {
             _answerService = answerService;
+            _redisService = redisService;
         }
 
         [HttpGet("get-answers-by-question")]
         [Authorize()]
-        public IActionResult GetAnswersByQuestion(int questionId)
+        public async Task<IActionResult> GetAnswersByQuestion(int questionId)
         {
+            var answersFromCache = await _redisService.Get("aq" + questionId);
+            if (answersFromCache != null)
+            {
+                var user = JsonConvert.DeserializeObject<List<Answer>>(answersFromCache);
+                return Ok(user);
+            }
+
             var result = _answerService.GetAnswersByQuestion(questionId);
             if (result.Success)
+            {
+                await _redisService.Set("aq" + questionId, JsonConvert.SerializeObject(result.Data));
                 return Ok(result.Data);
+            }
 
             return BadRequest(result.Message);
         }
 
         [HttpGet("get-answers-by-user")]
         [Authorize()]
-        public IActionResult GetAnswersByUser(int userId)
+        public async Task<IActionResult> GetAnswersByUser(int userId)
         {
+            var answersFromCache = await _redisService.Get("au" + userId);
+            if (answersFromCache != null)
+            {
+                var user = JsonConvert.DeserializeObject<List<Answer>>(answersFromCache);
+                return Ok(user);
+            }
+
             var result = _answerService.GetAnswersByUser(userId);
             if (result.Success)
+            {
+                await _redisService.Set("au" + userId, JsonConvert.SerializeObject(result.Data));
                 return Ok(result.Data);
+            }
 
             return BadRequest(result.Message);
         }

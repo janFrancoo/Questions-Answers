@@ -3,8 +3,6 @@ using DataAccess;
 using Entities;
 using System.Collections.Generic;
 
-// GET ANSWER WITH LIKE COUNT
-
 namespace Business
 {
     public class AnswerService : IAnswerService

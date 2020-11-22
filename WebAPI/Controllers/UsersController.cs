@@ -1,9 +1,11 @@
 ﻿using Business;
+using DataAccess;
 using Entities;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -14,20 +16,31 @@ namespace WebAPI.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
+        private RedisService _redisService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, RedisService redisService)
         {
             _userService = userService;
+            _redisService = redisService;
         }
 
         [HttpGet("get-user")]
         [Authorize()]
-        public IActionResult GetUser(string email)
+        public async Task<IActionResult> GetUser(string email)
         {
+            var userFromCache = await _redisService.Get("u" + email);
+            if (userFromCache != null)
+            {
+                var user = JsonConvert.DeserializeObject<User>(userFromCache);
+                return Ok(user);
+            }
+
             var result = _userService.GetByMail(email);
-            
             if (result.Success)
+            {
+                await _redisService.Set("u" + email, JsonConvert.SerializeObject(result.Data));
                 return Ok(result.Data);
+            }
 
             return BadRequest(result.Message);
         }
