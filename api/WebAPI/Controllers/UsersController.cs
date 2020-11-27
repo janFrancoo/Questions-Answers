@@ -24,25 +24,72 @@ namespace WebAPI.Controllers
             _redisService = redisService;
         }
 
-        [HttpGet("get-user")]
+        [HttpGet("get-user-by-id")]
         [Authorize()]
-        public async Task<IActionResult> GetUser(string email)
+        public async Task<IActionResult> GetUserById(string id)
+        {
+            int userId;
+
+            if (id == null)
+            {
+                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+            }
+            else
+                userId = int.Parse(id);
+
+            var userFromCache = await _redisService.Get("u" + userId);
+            if (userFromCache != null)
+            {
+                var user = JsonConvert.DeserializeObject<User>(userFromCache);
+                user.PasswordHash = null;
+                user.PasswordSalt = null;
+                return Ok(new
+                {
+                    Success = true,
+                    Data = user
+                });
+            }
+
+            var result = _userService.GetById(userId);
+            if (result.Success)
+            {
+                result.Data.PasswordSalt = null;
+                result.Data.PasswordHash = null;
+                await _redisService.Set("u" + userId, JsonConvert.SerializeObject(result.Data));
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpGet("get-user-by-email")]
+        [Authorize()]
+        public async Task<IActionResult> GetUserByMail(string email)
         {
             var userFromCache = await _redisService.Get("u" + email);
             if (userFromCache != null)
             {
                 var user = JsonConvert.DeserializeObject<User>(userFromCache);
-                return Ok(user);
+                user.PasswordHash = null;
+                user.PasswordSalt = null;
+                return Ok(new
+                {
+                    Success = true,
+                    Data = user
+                });
             }
 
             var result = _userService.GetByMail(email);
             if (result.Success)
             {
+                result.Data.PasswordHash = null;
+                result.Data.PasswordSalt = null;
                 await _redisService.Set("u" + email, JsonConvert.SerializeObject(result.Data));
-                return Ok(result.Data);
+                return Ok(result);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
 
         [HttpGet("get-all-users")]

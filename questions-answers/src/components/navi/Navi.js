@@ -15,6 +15,7 @@ import {
 } from 'reactstrap';
 import Cookies from "universal-cookie"
 import { connect } from "react-redux"
+import { Link } from "react-router-dom"
 
 class Navi extends Component {
   constructor(props) {
@@ -87,6 +88,7 @@ class Navi extends Component {
             </Nav>
             { !this.state.isLoggedIn && <NavLink href="/auth/login">Login</NavLink> }
             { !this.state.isLoggedIn && <NavLink href="/auth/register">Register</NavLink> }
+            { this.state.isLoggedIn && <Link to="/user" class="mr-5">Profile</Link> }
             { this.state.isLoggedIn && <Button color="primary" onClick={() => this.logout()}>Logout</Button> }
           </Collapse>
         </Navbar>
