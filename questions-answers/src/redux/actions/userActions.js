@@ -38,3 +38,33 @@ export const getUserFail = (userResponse) => ({
     type: actionTypes.GET_USER_FAIL,
     payload: userResponse
 })
+
+export const uploadAvatar = (formData, token) => (function(dispatch) {        
+    return fetch("https://localhost:44309/api/users/update-avatar", {
+        method: "post",
+        headers: {
+            "Accept": "application/json, text/plain, */*",
+            "Authorization": "Bearer " + token
+        },
+        body: formData })
+        .then(res => {
+            return res.json()
+        })
+        .then(res => {
+            if (res.success === true)
+                return dispatch(uploadAvatarSuccess(res))
+            else {
+                return dispatch(uploadAvatarFail(res))
+            }
+        })
+})
+
+export const uploadAvatarSuccess = (res) => ({
+    type: actionTypes.UPLOAD_AVATAR_SUCCESS,
+    payload: res
+})
+
+export const uploadAvatarFail = (res) => ({
+    type: actionTypes.UPLOAD_AVATAR_FAIL,
+    payload: res
+})

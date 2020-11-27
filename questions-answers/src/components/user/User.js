@@ -5,7 +5,7 @@ import * as userActions from "../../redux/actions/userActions"
 import alertifyjs from "alertifyjs"
 import Cookies from "universal-cookie"
 import { Row, Col } from "reactstrap"
-import { Link } from 'react-router-dom';
+import Avatar from './Avatar';
 
 class User extends Component {
     componentDidMount() {
@@ -19,7 +19,7 @@ class User extends Component {
 
     componentDidUpdate() {
         if (!this.props.userResponse.success)
-            alertifyjs.error(this.props.userResponse)
+            alertifyjs.error(this.props.userResponse.message)
     }
 
     render() {
@@ -27,12 +27,17 @@ class User extends Component {
             <div>
                 <Row>
                     <Col xs="4">
-                        <img src="https://localhost:44309/Media/Avatars/1005.jpeg" width="300" height="300" alt="avatar" />
+                        { this.props.userResponse.success && 
+                            <img src={ this.props.userResponse.data.avatar ? 
+                                "https://localhost:44309/Media/Avatars/" + this.props.userResponse.data.avatar
+                            :   "http://localhost:3000/images/default_avatar.png" } 
+                                width="300" height="300" alt="avatar" />
+                        }
                     </Col>
                     <Col xs="8">
                         <h1>{ this.props.userResponse.data.username }</h1>
                         {
-                            !this.props.match.params.id && <Link to="/user/settings">Settings</Link>
+                            !this.props.match.params.id && this.props.userResponse.success && <Avatar />
                         }
                     </Col>
                 </Row>

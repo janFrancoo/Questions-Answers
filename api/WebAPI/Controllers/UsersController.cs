@@ -139,6 +139,7 @@ namespace WebAPI.Controllers
             var user = _userService.GetById(userId).Data;
             user.Avatar = fileName;
             _userService.Update(user);
+            await _redisService.Set("u" + userId, JsonConvert.SerializeObject(user));
 
             return Ok(new
             {
