@@ -68,3 +68,35 @@ export const getQuestionsByUser = (userId, token) => (function(dispatch) {
                 return dispatch(getQuestionsFail(res))
         })
 })
+
+export const addQuestion = (questionBody, token) => (function(dispatch) {   
+    console.log(questionBody)
+
+    return fetch("https://localhost:44309/api/question/add-question", {
+        method: "post",
+        headers: {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token 
+        },
+        body: JSON.stringify(questionBody) })
+        .then(res => res.text())
+        .then(res => {
+            console.log(res)
+
+            if (res.success !== false)
+                return dispatch(addQuestionSuccess())
+            else
+                return dispatch(addQuestionFail(res))
+        })
+})
+
+export const addQuestionSuccess = () => ({
+    type: actionTypes.ADD_QUESTION_SUCCESS,
+    payload: { success: true }
+})
+
+export const addQuestionFail = (res) => ({
+    type: actionTypes.ADD_QUESTION_FAIL,
+    payload: res.message
+})

@@ -10,6 +10,10 @@ export default function questionReducer(state=initialState.question, action) {
                 ...action.payload,
                 ...state
             }
+        case actionTypes.ADD_QUESTION_SUCCESS:
+            return action.payload
+        case actionTypes.ADD_QUESTION_FAIL:
+            return action.payload
         default: 
             return state
     }
