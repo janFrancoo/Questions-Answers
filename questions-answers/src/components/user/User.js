@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { connect } from "react-redux"
 import { bindActionCreators } from "redux"
 import * as userActions from "../../redux/actions/userActions"
+import * as questionActions from "../../redux/actions/questionActions"
 import alertifyjs from "alertifyjs"
 import Cookies from "universal-cookie"
-import { Row, Col } from "reactstrap"
-import Avatar from './Avatar';
+import { Row, Col, ListGroup, ListGroupItem } from "reactstrap"
+import Avatar from './Avatar'
+import { Link } from "react-router-dom"
 
 class User extends Component {
     componentDidMount() {
@@ -15,11 +17,17 @@ class User extends Component {
         const token = cookies.get("access_token")
 
         this.props.actions.getUser(userId, token)
+        this.props.actions.getQuestions(userId, token)
     }
 
     componentDidUpdate() {
         if (!this.props.userResponse.success)
             alertifyjs.error(this.props.userResponse.message)
+
+        if (!this.props.questionsResponse.success)
+            alertifyjs.error(this.props.questionsResponse.message)
+
+        console.log(this.props.questionsResponse)
     }
 
     render() {
@@ -42,6 +50,16 @@ class User extends Component {
                     </Col>
                 </Row>
                 <hr />
+                <h3>Questions</h3>
+                <ListGroup>
+                    {
+                        this.props.questionsResponse.data.map(question => (
+                            <ListGroupItem key={question.id} >
+                                <Link to={"/question/" + question.id}>{question.title}</Link>
+                            </ListGroupItem>
+                        ))
+                    }
+                </ListGroup>
             </div>
         );
     }
@@ -49,14 +67,16 @@ class User extends Component {
 
 function mapStateToProps(state) {
     return {
-      userResponse: state.userReducer
+        userResponse: state.userReducer,
+        questionsResponse: state.questionsReducer
     }
 }
   
 function mapDispatchToProps(dispatch) {
     return {
         actions: {
-            getUser: bindActionCreators(userActions.getUser, dispatch)
+            getUser: bindActionCreators(userActions.getUser, dispatch),
+            getQuestions: bindActionCreators(questionActions.getQuestionsByUser, dispatch)
         }
     }
 }

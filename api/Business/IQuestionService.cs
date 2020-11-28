@@ -7,6 +7,7 @@ namespace Business
 {
     public interface IQuestionService
     {
+        IDataResult<List<Question>> GetAll();
         IDataResult<Question> GetById(int id);
         IDataResult<List<Question>> GetByUser(int userId);
         IDataResult<List<Question>> GetByDate(DateTime date);

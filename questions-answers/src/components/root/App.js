@@ -4,6 +4,7 @@ import QuestionList from "../posts/QuestionList"
 import Login from "../auth/Login"
 import Register from "../auth/Register"
 import User from "../user/User"
+import QuestionDetail from "../posts/QuestionDetail"
 import { Route, Switch } from "react-router-dom"
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <Container>
         <Switch>
           <Route path="/" exact component={QuestionList} />
+          <Route path="/question/:id" exact component={QuestionDetail} />
           <Route path="/auth/login" exact component={Login} />
           <Route path="/auth/register" exact component={Register} />
           <Route path="/user/:id" exact component={User} />

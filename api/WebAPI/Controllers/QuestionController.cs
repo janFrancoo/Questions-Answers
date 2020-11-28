@@ -24,50 +24,76 @@ namespace WebAPI.Controllers
             _redisService = redisService;
         }
 
+        [HttpGet("get-questions")]
+        public IActionResult GetQuestions()
+        {
+            var result = _questionService.GetAll();
+            if (result.Success)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
         [HttpGet("get-question-by-id")]
-        [Authorize()]
         public async Task<IActionResult> GetQuestionById(int id) 
         {
             var questionFromCache = await _redisService.Get("q" + id);
             if (questionFromCache != null)
             {
                 var question = JsonConvert.DeserializeObject<Question>(questionFromCache);
-                return Ok(question);
+                return Ok(new
+                {
+                    Success = true,
+                    Data = question
+                });
             }
 
             var result = _questionService.GetById(id);
             if (result.Success)
             {
                 await _redisService.Set("q" + id, JsonConvert.SerializeObject(result.Data));
-                return Ok(result.Data);
+                return Ok(result);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
 
         [HttpGet("get-question-by-user")]
         [Authorize()]
-        public async Task<IActionResult> GetQuestionByUser(int userId)
+        public async Task<IActionResult> GetQuestionByUser(string userId)
         {
-            var questionsFromCache = await _redisService.Get("qu" + userId);
+            int id;
+
+            if (userId == null)
+            {
+                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                id = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+            }
+            else
+                id = int.Parse(userId);
+
+            var questionsFromCache = await _redisService.Get("qu" + id);
             if (questionsFromCache != null)
             {
                 var questions = JsonConvert.DeserializeObject<List<Question>>(questionsFromCache);
-                return Ok(questions);
+                return Ok(new
+                {
+                    Success = true,
+                    Data = questions
+                });
             }
 
-            var result = _questionService.GetByUser(userId);
+            var result = _questionService.GetByUser(id);
             if (result.Success)
             {
-                await _redisService.Set("qu" + userId, JsonConvert.SerializeObject(result.Data));
-                return Ok(result.Data);
+                await _redisService.Set("qu" + id, JsonConvert.SerializeObject(result.Data));
+                return Ok(result);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
 
         [HttpGet("get-question-by-date")]
-        [Authorize()]
         public async Task<IActionResult> GetQuestionByDate(DateTime date)
         {
             var questionsFromCache = await _redisService.Get("qd" + date);

@@ -31,6 +31,11 @@ namespace Business
             return new SuccessResult();
         }
 
+        public IDataResult<List<Question>> GetAll()
+        {
+            return new SuccessDataResult<List<Question>>(_questionDao.GetList());
+        }
+
         public IDataResult<List<Question>> GetByDate(DateTime date)
         {
             return new SuccessDataResult<List<Question>>(_questionDao.GetList(q => q.Date == date));
