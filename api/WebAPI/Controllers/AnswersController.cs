@@ -24,45 +24,57 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("get-answers-by-question")]
-        [Authorize()]
         public async Task<IActionResult> GetAnswersByQuestion(int questionId)
         {
             var answersFromCache = await _redisService.Get("aq" + questionId);
             if (answersFromCache != null)
             {
-                var user = JsonConvert.DeserializeObject<List<Answer>>(answersFromCache);
-                return Ok(user);
+                var answers = JsonConvert.DeserializeObject<List<Answer>>(answersFromCache);
+                return Ok(new
+                {
+                    Data = answers,
+                    Success = true
+                });
             }
 
             var result = _answerService.GetAnswersByQuestion(questionId);
             if (result.Success)
             {
                 await _redisService.Set("aq" + questionId, JsonConvert.SerializeObject(result.Data));
-                return Ok(result.Data);
+                return Ok(result);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
 
         [HttpGet("get-answers-by-user")]
         [Authorize()]
-        public async Task<IActionResult> GetAnswersByUser(int userId)
+        public async Task<IActionResult> GetAnswersByUser(string userId)
         {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var uId = identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            if (userId == null)
+                userId = uId;
+
             var answersFromCache = await _redisService.Get("au" + userId);
             if (answersFromCache != null)
             {
-                var user = JsonConvert.DeserializeObject<List<Answer>>(answersFromCache);
-                return Ok(user);
+                var answers = JsonConvert.DeserializeObject<List<Answer>>(answersFromCache);
+                return Ok(new { 
+                    Data = answers,
+                    Success = true
+                });
             }
 
-            var result = _answerService.GetAnswersByUser(userId);
+            var result = _answerService.GetAnswersByUser(int.Parse(userId));
             if (result.Success)
             {
                 await _redisService.Set("au" + userId, JsonConvert.SerializeObject(result.Data));
-                return Ok(result.Data);
+                return Ok(result);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
 
         [HttpPost("add-answer")]
@@ -75,9 +87,11 @@ namespace WebAPI.Controllers
 
             var result = _answerService.Add(answer);
             if (result.Success)
-                return Ok();
+                return Ok(new { 
+                    Success = true
+                });
 
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
 
         [HttpPut("update-answer")]

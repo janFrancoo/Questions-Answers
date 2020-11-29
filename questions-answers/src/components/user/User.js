@@ -8,6 +8,7 @@ import Cookies from "universal-cookie"
 import { Row, Col, ListGroup, ListGroupItem } from "reactstrap"
 import Avatar from './Avatar'
 import { Link } from "react-router-dom"
+import Answers from "../posts/Answers"
 
 class User extends Component {
     componentDidMount() {
@@ -26,8 +27,6 @@ class User extends Component {
 
         if (!this.props.questionsResponse.success)
             alertifyjs.error(this.props.questionsResponse.message)
-
-        console.log(this.props.questionsResponse)
     }
 
     render() {
@@ -60,6 +59,12 @@ class User extends Component {
                         ))
                     }
                 </ListGroup>
+                <hr />
+                <h3>Answers</h3>
+                <Answers getData={{
+                    type: "user",
+                    id: this.props.match.params.id
+                }} />
             </div>
         );
     }

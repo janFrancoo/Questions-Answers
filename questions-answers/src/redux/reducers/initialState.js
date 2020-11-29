@@ -16,5 +16,9 @@ export default {
             questionText: "",
             date: ""
         }
+    },
+    answers: {
+        success: true,
+        data: []
     }
 }

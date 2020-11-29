@@ -3,6 +3,7 @@ import { connect } from "react-redux"
 import { bindActionCreators } from "redux"
 import * as questionActions from "../../redux/actions/questionActions"
 import alertifyjs from "alertifyjs"
+import Answers from "./Answers"
 
 class QuestionDetail extends Component {
     componentDidMount() {
@@ -21,6 +22,13 @@ class QuestionDetail extends Component {
                 <hr />
                 <p>{ this.props.questionResponse.data.questionText }</p>
                 <p>{ this.props.questionResponse.data.date }</p>
+                <br />
+                <h3>Answers</h3>
+                <hr />
+                <Answers getData={{
+                    type: "question",
+                    id: this.props.match.params.id
+                }} />
             </div>
         );
     }
