@@ -12,7 +12,7 @@ function App() {
   return (
     <div>
       <Navi />
-      <Container>
+      <Container className="pt-5">
         <Switch>
           <Route path="/" exact component={QuestionList} />
           <Route path="/question/add" exact component={AddQuestion} />

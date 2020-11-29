@@ -26,17 +26,6 @@ namespace WebAPI.Controllers
         [HttpGet("get-answers-by-question")]
         public async Task<IActionResult> GetAnswersByQuestion(int questionId)
         {
-            var answersFromCache = await _redisService.Get("aq" + questionId);
-            if (answersFromCache != null)
-            {
-                var answers = JsonConvert.DeserializeObject<List<Answer>>(answersFromCache);
-                return Ok(new
-                {
-                    Data = answers,
-                    Success = true
-                });
-            }
-
             var result = _answerService.GetAnswersByQuestion(questionId);
             if (result.Success)
             {

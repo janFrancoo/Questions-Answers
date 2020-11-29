@@ -4,6 +4,8 @@ import { bindActionCreators } from "redux"
 import * as questionActions from "../../redux/actions/questionActions"
 import alertifyjs from "alertifyjs"
 import Answers from "./Answers"
+import AddAnswer from "./AddAnswer"
+import Cookies from "universal-cookie"
 
 class QuestionDetail extends Component {
     componentDidMount() {
@@ -29,6 +31,13 @@ class QuestionDetail extends Component {
                     type: "question",
                     id: this.props.match.params.id
                 }} />
+                {
+                    new Cookies().get("access_token") && 
+                        <div>
+                            <hr />
+                            <AddAnswer questionId={this.props.match.params.id} />
+                        </div>
+                }
             </div>
         );
     }

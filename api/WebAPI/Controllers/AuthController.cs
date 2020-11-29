@@ -54,9 +54,9 @@ namespace WebAPI.Controllers
             if (!result.Success)
                 return BadRequest(result);
 
-            // CodeHelper codeHelper = new CodeHelper();
-            // await _mailer.SendMailAsync(userForRegisterDto.Email, "Welcome!", 
-            //    codeHelper.GenerateRandomCode(_codeSettings.Value.ActivationCodeLength));
+            CodeHelper codeHelper = new CodeHelper();
+            await _mailer.SendMailAsync(userForRegisterDto.Email, "Welcome!", 
+                codeHelper.GenerateRandomCode(_codeSettings.Value.ActivationCodeLength));
 
             return Ok(result);
         }

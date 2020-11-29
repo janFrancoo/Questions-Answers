@@ -42,3 +42,34 @@ export const getAnswersByUser = (userId, token) => (function(dispatch) {
                 return dispatch(getAnswersFail(res))
         })
 })
+
+export const addAnswer = (qId, answer, token) => (function(dispatch) {    
+    return fetch("https://localhost:44309/api/answers/add-answer", {
+        method: "post",
+        headers: {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: {
+            QuestionId: qId,
+            AnswerText: answer
+        }})
+        .then(res => res.json())
+        .then(res => {
+            if (res.success !== false)
+                return dispatch(addAnswerSuccess(res))
+            else
+                return dispatch(addAnswerFail(res))
+        })
+})
+
+export const addAnswerSuccess = (answerResponse) => ({
+    type: actionTypes.ADD_ANSWER_SUCCESS,
+    payload: answerResponse
+})
+
+export const addAnswerFail = (answerResponse) => ({
+    type: actionTypes.ADD_ANSWER_FAIL,
+    payload: answerResponse.message
+})
