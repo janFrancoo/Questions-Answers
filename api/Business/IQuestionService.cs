@@ -1,5 +1,6 @@
 ﻿using Core.Helpers.Result;
 using Entities;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 
@@ -9,6 +10,7 @@ namespace Business
     {
         IDataResult<List<Question>> GetAll();
         IDataResult<Question> GetById(int id);
+        IDataResult<QuestionForDetailDto> GetByIdWithUser(int id);
         IDataResult<List<Question>> GetByUser(int userId);
         IDataResult<List<Question>> GetByDate(DateTime date);
         IResult Add(Question question);

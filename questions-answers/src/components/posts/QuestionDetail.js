@@ -20,12 +20,19 @@ class QuestionDetail extends Component {
     render() {
         return (
             <div>
-                { this.props.questionResponse.data.title }
+                <h3>{ this.props.questionResponse.data.question.title }</h3>
                 <hr />
-                <p>{ this.props.questionResponse.data.questionText }</p>
-                <p>{ this.props.questionResponse.data.date }</p>
-                <br />
-                <h3>Answers</h3>
+                <p>{ this.props.questionResponse.data.question.questionText }</p>
+                <p>{ this.props.questionResponse.data.question.date }</p>
+                <hr />
+                <p>
+                    <img src={ this.props.questionResponse.data.avatar ? 
+                                "https://localhost:44309/Media/Avatars/" + this.props.questionResponse.data.avatar
+                            :   "http://localhost:3000/images/default_avatar.png" } 
+                                width="50" height="50" alt="avatar" />
+                    <a href={"/user/" + this.props.questionResponse.data.userId}>{ this.props.questionResponse.data.username }</a>
+                </p>
+                <h4>Answers</h4>
                 <hr />
                 <Answers getData={{
                     type: "question",

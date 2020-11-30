@@ -1,6 +1,7 @@
 ﻿using Core.Helpers.Result;
 using DataAccess;
 using Entities;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 
@@ -48,6 +49,15 @@ namespace Business
                 return new ErrorDataResult<Question>("No such question");
 
             return new SuccessDataResult<Question>(question);
+        }
+
+        public IDataResult<QuestionForDetailDto> GetByIdWithUser(int id)
+        {
+            var question = _questionDao.GetWithUser(q => q.Question.Id == id);
+            if (question == default)
+                return new ErrorDataResult<QuestionForDetailDto>("No such question");
+
+            return new SuccessDataResult<QuestionForDetailDto>(question);
         }
 
         public IDataResult<List<Question>> GetByUser(int userId)

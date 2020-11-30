@@ -10,11 +10,16 @@ export default {
     },
     question: {
         data: {
-            id: 0,
+            question: {
+                id: 0,
+                userId: 0,
+                title: "",
+                questionText: "",
+                date: ""
+            },
             userId: 0,
-            title: "",
-            questionText: "",
-            date: ""
+            username: "",
+            avatar: ""
         }
     },
     answers: {

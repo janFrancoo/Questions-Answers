@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Business;
 using DataAccess;
 using Entities;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -40,7 +41,7 @@ namespace WebAPI.Controllers
             var questionFromCache = await _redisService.Get("q" + id);
             if (questionFromCache != null)
             {
-                var question = JsonConvert.DeserializeObject<Question>(questionFromCache);
+                var question = JsonConvert.DeserializeObject<QuestionForDetailDto>(questionFromCache);
                 return Ok(new
                 {
                     Success = true,
@@ -48,7 +49,7 @@ namespace WebAPI.Controllers
                 });
             }
 
-            var result = _questionService.GetById(id);
+            var result = _questionService.GetByIdWithUser(id);
             if (result.Success)
             {
                 await _redisService.Set("q" + id, JsonConvert.SerializeObject(result.Data));
