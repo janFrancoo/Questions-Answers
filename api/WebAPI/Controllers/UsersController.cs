@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using WebAPI.Middlewares;
 
 namespace WebAPI.Controllers
 {
@@ -17,11 +17,13 @@ namespace WebAPI.Controllers
     {
         private IUserService _userService;
         private RedisService _redisService;
+        private IClientConfiguration _clientConfiguration;
 
-        public UsersController(IUserService userService, RedisService redisService)
+        public UsersController(IUserService userService, IClientConfiguration configuration, RedisService redisService)
         {
             _userService = userService;
             _redisService = redisService;
+            _clientConfiguration = configuration;
         }
 
         [HttpGet("get-user-by-id")]
@@ -31,10 +33,7 @@ namespace WebAPI.Controllers
             int userId;
 
             if (id == null)
-            {
-                var identity = HttpContext.User.Identity as ClaimsIdentity;
-                userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
-            }
+                userId = int.Parse(_clientConfiguration.UserId);
             else
                 userId = int.Parse(id);
 
@@ -127,8 +126,7 @@ namespace WebAPI.Controllers
             if (!file.ContentType.Split("/")[0].Equals("image"))
                 return BadRequest("Invalid file format");
 
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            int userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+            int userId = int.Parse(_clientConfiguration.UserId);
 
             string fileName = userId + "." + file.ContentType.Split("/")[1];
             string filePath = "Static/Avatars/" + fileName;
@@ -154,8 +152,7 @@ namespace WebAPI.Controllers
         [Authorize()]
         public IActionResult ChangePassword(PasswordUpdateDto passwordUpdateDto)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            int userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+            int userId = int.Parse(_clientConfiguration.UserId);
 
             var result = _userService.ChangePassword(userId, passwordUpdateDto.CurrentPassword, passwordUpdateDto.NewPassword);
             if (result.Success)
@@ -168,8 +165,7 @@ namespace WebAPI.Controllers
         [Authorize()]
         public IActionResult GetLikes()
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            int userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+            int userId = int.Parse(_clientConfiguration.UserId);
 
             var result = _userService.GetLikes(userId);
             return Ok(result);

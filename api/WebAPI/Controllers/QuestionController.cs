@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Business;
 using DataAccess;
@@ -9,6 +8,7 @@ using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using WebAPI.Middlewares;
 
 namespace WebAPI.Controllers
 {
@@ -18,11 +18,13 @@ namespace WebAPI.Controllers
     {
         private IQuestionService _questionService;
         private RedisService _redisService;
+        private IClientConfiguration _clientConfiguration;
 
-        public QuestionController(IQuestionService questionService, RedisService redisService)
+        public QuestionController(IQuestionService questionService, IClientConfiguration configuration, RedisService redisService)
         {
             _questionService = questionService;
             _redisService = redisService;
+            _clientConfiguration = configuration;
         }
 
         [HttpGet("get-questions")]
@@ -66,10 +68,7 @@ namespace WebAPI.Controllers
             int id;
 
             if (userId == null)
-            {
-                var identity = HttpContext.User.Identity as ClaimsIdentity;
-                id = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
-            }
+                id = int.Parse(_clientConfiguration.UserId);
             else
                 id = int.Parse(userId);
 
@@ -118,8 +117,7 @@ namespace WebAPI.Controllers
         [Authorize()]
         public IActionResult AddQuestion(Question question)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            var userId = identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userId = _clientConfiguration.UserId;
             question.UserId = int.Parse(userId);
 
             var result = _questionService.Add(question);

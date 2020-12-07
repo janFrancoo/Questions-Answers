@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using WebAPI.Middlewares;
 
 namespace WebAPI.Controllers
 {
@@ -16,11 +16,13 @@ namespace WebAPI.Controllers
     {
         private IAnswerService _answerService;
         private RedisService _redisService;
+        private IClientConfiguration _clientConfiguration;
 
-        public AnswersController(IAnswerService answerService, RedisService redisService)
+        public AnswersController(IAnswerService answerService, IClientConfiguration configuration, RedisService redisService)
         {
             _answerService = answerService;
             _redisService = redisService;
+            _clientConfiguration = configuration;
         }
 
         [HttpGet("get-answers-by-question")]
@@ -40,8 +42,7 @@ namespace WebAPI.Controllers
         [Authorize()]
         public async Task<IActionResult> GetAnswersByUser(string userId)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            var uId = identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string uId = _clientConfiguration.UserId;
 
             if (userId == null)
                 userId = uId;
@@ -70,8 +71,7 @@ namespace WebAPI.Controllers
         [Authorize()]
         public IActionResult AddAnswer(Answer answer)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            var userId = identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userId = _clientConfiguration.UserId;
             answer.UserId = int.Parse(userId);
 
             var result = _answerService.Add(answer);
@@ -109,8 +109,7 @@ namespace WebAPI.Controllers
         [Authorize()]
         public IActionResult LikeAnswer(int answerId)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            int userId = int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+            int userId = int.Parse(_clientConfiguration.UserId);
 
             var result = _answerService.LikeAnswer(userId, answerId);
             if (result.Success)

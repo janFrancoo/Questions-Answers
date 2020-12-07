@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.IO;
 using DataAccess;
+using WebAPI.Middlewares;
 
 namespace WebAPI
 {
@@ -51,6 +52,8 @@ namespace WebAPI
             services.AddSingleton<IMailer, Mailer>();
 
             services.Configure<CodeSettings>(Configuration.GetSection("CodeSettings"));
+
+            services.AddScoped<IClientConfiguration, ClientConfiguration>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,6 +87,8 @@ namespace WebAPI
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseClientConfiguration();
 
             app.UseEndpoints(endpoints =>
             {
